@@ -84,6 +84,7 @@ let default_permitted_tags : (string * (string * (string -> string)) list) list 
 	; ("strong", [])
 	; ("pre", [])
 	; ("br", [])
+	; ("blockquote", [])
 	];;
 
 (*s Add common attributes into the listed tags *)
