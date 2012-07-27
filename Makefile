@@ -58,7 +58,8 @@ check: html_sanitizer
 	./html_sanitizer --string "<tag>0123456789abcdef<foo></tag>" --permitted-tags "tag foo" --verify "<tag>0123456789abcdef<foo></foo></tag>"
 	./html_sanitizer --string "<tag>0123456789abcdef</tag>" --permitted-tags "tag" --break-long-words true --verify "<tag>0123456789<wbr></wbr>abcdef<wbr></wbr></tag>"
 	./html_sanitizer --break-long-words true --string "http://example.com/somelongexpression, and then some" --verify "http://example.com/somelongexpression<wbr></wbr>, and then some<wbr></wbr>"
-	./html_sanitizer --string "foo<p>bar<br>baz</p>zab" --level nanohtml --verify "foo<br>bar<br>baz<br>zab"
+#	./html_sanitizer --string "foo<p>bar<br>baz</p>zab" --level nanohtml --verify "foo<br>bar<br>baz<br>zab"
+	./html_sanitizer --string "<blockquote>foo</blockquote>" --verify '<blockquote>foo</blockquote>' --level aggressive
 
 CSS_Parser.cmi: CSS_Types.cmo
 
