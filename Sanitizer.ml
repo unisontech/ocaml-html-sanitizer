@@ -22,6 +22,8 @@ let re_safeurl = Str.regexp_case_fold "^[ ]*\\(\\(\\(http\\|https\\|ftp\\|feed\\
 let re_safeurl_or_word = Str.regexp_case_fold "^[ ]*\\(\\(http?://\\(www\\.\\)?\\(youtube\\.com\\|vimeo.com\\|download\\.macromedia\\.com\\)\\(/[^@]*\\)?\\)\\|\\([0-9a-z_]+[ ]*\\)\\)$";;
 let re_classid = Str.regexp_case_fold "^[ ]*clsid:d27cdb6e-ae6d-11cf-96b8-444553540000[ ]*$";;
 
+let re_unison = Str.regexp_case_fold "^[ ]*\\(unison://[a-z0-9:/]*\\)[ ]*$";;
+
 (* Check value against a regular expression. Returns value or raises exception. *)
 let check_re re s = match Str.string_match re s 0 with
 		| true -> s
@@ -36,7 +38,7 @@ let rec check_href_helper s = function
             | false -> check_href_helper s tail
 ;;
 
-let check_href s = check_href_helper s [re_url; re_mailto; re_url_relative];;
+let check_href s = check_href_helper s [re_url; re_mailto; re_url_relative; re_unison];;
 
 (* Check various kinds of HTML attribute value content. *)
 let check_url = check_re re_url;;
