@@ -13,8 +13,8 @@ exception TagEraseWithContents;;
 exception UnexpectedNodeType;;
 
 (*s Implement verification code for HTML attributes. *)
-let re_url = Str.regexp_case_fold "^[ ]*\\(\\(\\(http\\|https\\|ftp\\|feed\\|news\\)://[a-z0-9_.-]+\\(/[^@]*\\)?\\)?\\)[ ]*$";;
-let re_img_url = Str.regexp_case_fold "^[ ]*\\(\\(\\(\\(http\\|https\\|ftp\\|feed\\|news\\)://[a-z0-9_.-]+\\(/[^@]*\\)?\\)?\\)\\|\\(data:image/\\(jpg\\|jpeg\\|png\\|gif\\);base64,.+\\)\\)[ ]*$";;
+let re_url = Str.regexp_case_fold "^[ ]*\\(\\(\\(http\\|https\\|ftp\\|feed\\|news\\)://[a-z0-9_.-]+\\(/[/0-9a-z$_.+!*',()%?;:@&#\\-]*\\)?\\)?\\)[ ]*$";;
+let re_img_url = Str.regexp_case_fold "^[ ]*\\(data:image/\\(jpg\\|jpeg\\|png\\|gif\\);base64,.+\\)[ ]*$";;
 let re_url_relative = Str.regexp_case_fold "[ ]*\\(/[^@]*\\)[ ]*$";;
 let re_mailto = Str.regexp_case_fold "^[ ]*\\(mailto:[a-z0-9_.-]+@[a-z0-9_.-]+\\)?[ ]*$";;
 
@@ -38,11 +38,10 @@ let rec check_href_helper s = function
             | false -> check_href_helper s tail
 ;;
 
-let check_href s = check_href_helper s [re_url; re_mailto; re_url_relative; re_unison];;
-
 (* Check various kinds of HTML attribute value content. *)
+let check_href s = check_href_helper s [re_url; re_mailto; re_url_relative; re_unison];;
+let check_img_url s = check_href_helper s [re_url; re_img_url];;
 let check_url = check_re re_url;;
-let check_img_url = check_re re_img_url;;
 let check_safeurl = check_re re_safeurl;;
 let check_safeurl_or_word = check_re re_safeurl_or_word;;
 let check_default s = s;;
