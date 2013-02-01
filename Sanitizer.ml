@@ -13,7 +13,7 @@ exception TagEraseWithContents;;
 exception UnexpectedNodeType;;
 
 (*s Implement verification code for HTML attributes. *)
-let re_url = Str.regexp_case_fold "^[ ]*\\(\\(\\(http\\|https\\|ftp\\|feed\\|news\\)://[a-z0-9_.-]+\\(/[/0-9a-z$_.+!*',()%?;:@&#\\-]*\\)?\\)?\\)[ ]*$";;
+let re_url = Str.regexp_case_fold "^[ ]*\\(\\(\\(http\\|https\\|ftp\\|feed\\|news\\)://[a-z0-9_.-]+\\(/[/0-9a-z$_.+!*',()%?;:@&=#\\-]*\\)?\\)?\\)[ ]*$";;
 let re_img_url = Str.regexp_case_fold "^[ ]*\\(data:image/\\(jpg\\|jpeg\\|png\\|gif\\);base64,.+\\)[ ]*$";;
 let re_url_relative = Str.regexp_case_fold "[ ]*\\(/[^@]*\\)[ ]*$";;
 let re_mailto = Str.regexp_case_fold "^[ ]*\\(mailto:[a-z0-9_.-]+@[a-z0-9_.-]+\\)?[ ]*$";;
