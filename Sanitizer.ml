@@ -190,9 +190,9 @@ let element_strip allow_breaks erase_script_contents dataF = function
 	| Element (tag, _, children) ->
 		match fst (List.assoc tag html40_dtd) with
 			| `Block when allow_breaks -> raise (TagReplace ("<br>", "<br>"))
-			| `Block -> raise (TagReplace ("\n", "\n"))
+			| `Block -> raise (TagReplace (" ", " "))
 			| `Essential_block when allow_breaks -> raise (TagReplace ("<br>", "<br>"))
-			| `Essential_block -> raise (TagReplace ("\n", "\n"))
+			| `Essential_block -> raise (TagReplace (" ", " "))
 			| `Inline -> raise TagErase
 			| `None -> raise TagErase
 			| `Everywhere -> raise TagErase
