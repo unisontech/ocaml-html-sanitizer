@@ -14,7 +14,6 @@ exception UnexpectedNodeType;;
 
 (*s Implement verification code for HTML attributes. *)
 let re_url = Str.regexp_case_fold "^[ ]*\\(\\(\\(http\\|https\\|ftp\\|feed\\|news\\)://[a-z0-9_.-]+\\(/[/0-9a-z$_.+!*',()%?;:@&=#\\-]*\\)?\\)?\\)[ ]*$";;
-let re_img_url = Str.regexp_case_fold "^[ ]*\\(data:image/\\(jpg\\|jpeg\\|png\\|gif\\);base64,.+\\)[ ]*$";;
 let re_url_relative = Str.regexp_case_fold "[ ]*\\(/[^@]*\\)[ ]*$";;
 let re_mailto = Str.regexp_case_fold "^[ ]*\\(mailto:[a-z0-9_.-]+@[a-z0-9_.-]+\\)?[ ]*$";;
 
@@ -40,7 +39,6 @@ let rec check_href_helper s = function
 
 (* Check various kinds of HTML attribute value content. *)
 let check_href s = check_href_helper s [re_url; re_mailto; re_url_relative; re_unison];;
-let check_img_url s = check_href_helper s [re_url; re_img_url];;
 let check_url = check_re re_url;;
 let check_safeurl = check_re re_safeurl;;
 let check_safeurl_or_word = check_re re_safeurl_or_word;;
@@ -72,7 +70,7 @@ let default_permitted_tags : (string * (string * (string -> string)) list) list 
 			; ("width", check_int)
 			; ("height", check_int)
 			])
-	; ("img", [("src", check_img_url); ("alt", check_default)])
+	; ("img", [("src", check_url); ("alt", check_default)])
 	; ("div", [])
 	; ("span", [])
 	; ("p", [])
@@ -119,10 +117,10 @@ let parse_permitted_tags =
             let a_spec = (attr, get_attribute_checker (tag, attr)) in
             (tag, (a_spec :: assoc tag acc1)) :: remove_assoc tag acc1
         ) acc0 attrs
-    ) [];; 
+    ) [];;
 
 (*s To leave only permitted attributes we first check whether attribute in the permitted list (and throw if it is not), then use the checking function to verify the validity of the attribute's value. *)
-let sanitize_attributes_white perm_attrs attrs = 
+let sanitize_attributes_white perm_attrs attrs =
 	let rewrite (attr, value) acc = try
 				let check_fun = assoc attr perm_attrs in
 				(attr, check_fun value) :: acc
@@ -151,7 +149,7 @@ let evil_tag = function
 let element_sanitize_strict erase_script_contents erase_unallowed_tags permitted_tags_map dataF = function
 	| Data text -> dataF text
 	| Element (tag, attributes, children) ->
-		try 
+		try
             let perm_attrs = assoc tag permitted_tags_map in
 			Element (tag, sanitize_attributes_white perm_attrs attributes, children)
 		with
@@ -199,7 +197,7 @@ let element_strip allow_breaks erase_script_contents dataF = function
 	;;
 
 (*s Transform every node of HTML tag soup one by one with a specified function. If there is an exception while applying a function to a node, we ``remove that tag`` by placing all children of this node into the current position instead of the failed element. *)
-let rec map_document_nodes f = function 
+let rec map_document_nodes f = function
 	| x :: xs ->
 	    let new_node = try
 		let el = match f x with
@@ -273,7 +271,7 @@ type required_sanity_level =
     Transparent | Permissive | Aggressive | NanoHTML of allow_breaks
  and allow_breaks = bool
 
-let sanity_levels_map = 
+let sanity_levels_map =
     ["transparent", Transparent;
      "permissive", Permissive;
      "agressive", Aggressive;
@@ -296,7 +294,7 @@ class html_sanitizer
     ?(permitted_tags=[])       (* ["a/href"; "img/src,width,heigh"] *)
     (sanity_level:required_sanity_level) =
 
-    let data_distiller = 
+    let data_distiller =
         let to_doc s = Data s in
         let from_doc = function (Data s) -> s | _ -> raise UnexpectedNodeType in
         let to_list a = [a] in
@@ -329,4 +327,3 @@ class html_sanitizer
     method sanitize_string = transform_string self#sanitize_doc
 
     end;;
-
